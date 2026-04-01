@@ -1,0 +1,121 @@
+{
+  "manifest_version": "0.3",
+  "name": "eight-sleep-mcp",
+  "display_name": "Eight Sleep MCP",
+  "version": "0.2.0",
+  "description": "Unofficial MCP server for Eight Sleep account, device, temperature, and sleep data.",
+  "long_description": "Local MCP server for Eight Sleep built from observed mobile app traffic and validated against live device behavior. Supports account and device reads, temperature state, temperature events, sleep intervals, smart temperature controls, bedtime schedule updates, and Autopilot toggling.",
+  "author": {
+    "name": "Eight Sleep MCP Contributors"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/index.js"
+      ],
+      "env": {
+        "EIGHT_SLEEP_ACCESS_TOKEN": "${user_config.access_token}",
+        "EIGHT_SLEEP_EMAIL": "${user_config.email}",
+        "EIGHT_SLEEP_PASSWORD": "${user_config.password}",
+        "EIGHT_SLEEP_CLIENT_ID": "${user_config.client_id}",
+        "EIGHT_SLEEP_CLIENT_SECRET": "${user_config.client_secret}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "get_current_user",
+      "description": "Return the authenticated Eight Sleep account profile."
+    },
+    {
+      "name": "get_device",
+      "description": "Return the current pod or device state."
+    },
+    {
+      "name": "get_temperature",
+      "description": "Return current temperature settings and device state."
+    },
+    {
+      "name": "get_temperature_events",
+      "description": "Return recent temperature-related events."
+    },
+    {
+      "name": "get_sleep_intervals",
+      "description": "Return historical sleep intervals."
+    },
+    {
+      "name": "resume_smart_temperature",
+      "description": "Resume smart temperature mode."
+    },
+    {
+      "name": "turn_off_temperature",
+      "description": "Turn off active heating and cooling."
+    },
+    {
+      "name": "set_temporary_bedtime_level",
+      "description": "Apply a temporary bedtime temperature change."
+    },
+    {
+      "name": "set_bedtime_schedule",
+      "description": "Save a bedtime temperature change to the active schedule."
+    },
+    {
+      "name": "update_smart_temperature_levels",
+      "description": "Update saved smart temperature levels."
+    },
+    {
+      "name": "set_autopilot_enabled",
+      "description": "Enable or disable Autopilot."
+    }
+  ],
+  "license": "MIT",
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=20.18.0"
+    }
+  },
+  "user_config": {
+    "access_token": {
+      "type": "string",
+      "title": "Access Token",
+      "description": "Eight Sleep access token. Use this or the full credential set below.",
+      "sensitive": true,
+      "required": false
+    },
+    "email": {
+      "type": "string",
+      "title": "Email",
+      "description": "Eight Sleep account email for password-grant authentication.",
+      "required": false
+    },
+    "password": {
+      "type": "string",
+      "title": "Password",
+      "description": "Eight Sleep account password for password-grant authentication.",
+      "sensitive": true,
+      "required": false
+    },
+    "client_id": {
+      "type": "string",
+      "title": "Client ID",
+      "description": "Eight Sleep mobile client ID from observed app traffic.",
+      "sensitive": true,
+      "required": false
+    },
+    "client_secret": {
+      "type": "string",
+      "title": "Client Secret",
+      "description": "Eight Sleep mobile client secret from observed app traffic.",
+      "sensitive": true,
+      "required": false
+    }
+  }
+}

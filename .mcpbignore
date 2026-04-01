@@ -1,0 +1,13 @@
+.git/
+.github/
+src/
+tsconfig.json
+package-lock.json
+node_modules/.bin/
+node_modules/.package-lock.json
+node_modules/@types/
+node_modules/@esbuild/
+node_modules/esbuild/
+node_modules/tsx/
+node_modules/typescript/
+dist/**/*.test.js
