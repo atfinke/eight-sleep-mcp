@@ -214,6 +214,126 @@ test("EightSleepClient surfaces invalid JSON responses clearly", async () => {
   }
 });
 
+test("EightSleepClient returns a compact latest sleep summary from stageSummary", async () => {
+  const restoreFetch = installFetchMock(({ url, init }) => {
+    if (url === "https://client-api.8slp.net/v1/users/user-123/intervals") {
+      assert.equal(init?.method, "GET");
+
+      return jsonResponse({
+        intervals: [
+          {
+            id: "interval-older",
+            ts: "2026-04-01T11:00:00.000Z",
+            sleepStart: "2026-04-01T03:30:00.000Z",
+            sleepEnd: "2026-04-01T11:00:00.000Z",
+            score: 77,
+            stageSummary: {
+              sleepDuration: 28_800,
+              deepPercentOfSleep: 0.15,
+              remPercentOfSleep: 0.20,
+              lightPercentOfSleep: 0.65,
+            },
+          },
+          {
+            id: "interval-latest",
+            ts: "2026-04-02T15:35:30.000Z",
+            sleepStart: "2026-04-02T03:38:30.000Z",
+            sleepEnd: "2026-04-02T15:35:30.000Z",
+            score: 82,
+            stageSummary: {
+              sleepDuration: 34_380,
+              deepPercentOfSleep: 0.12,
+              remPercentOfSleep: 0.24,
+              lightPercentOfSleep: 0.64,
+            },
+          },
+        ],
+      });
+    }
+
+    throw new Error(`Unexpected URL: ${url}`);
+  });
+
+  try {
+    const client = new EightSleepClient(
+      loadConfig({
+        EIGHT_SLEEP_ACCESS_TOKEN: "token-123",
+        EIGHT_SLEEP_USER_ID: "user-123",
+      }),
+    );
+
+    const summary = await client.getLatestSleepSummary();
+    assert.deepEqual(summary, {
+      sleepStart: "2026-04-02T03:38:30.000Z",
+      sleepEnd: "2026-04-02T15:35:30.000Z",
+      sleepDuration: 34_380,
+      deepPct: 0.12,
+      remPct: 0.24,
+      lightPct: 0.64,
+    });
+  } finally {
+    restoreFetch();
+  }
+});
+
+test("EightSleepClient derives the latest sleep summary from stages when stageSummary is missing", async () => {
+  const restoreFetch = installFetchMock(({ url }) => {
+    if (url === "https://client-api.8slp.net/v1/users/user-123/intervals") {
+      return jsonResponse({
+        intervals: [
+          {
+            id: "interval-latest",
+            ts: "2026-04-02T10:00:00.000Z",
+            sleepStart: "2026-04-02T02:00:00.000Z",
+            sleepEnd: "2026-04-02T10:00:00.000Z",
+            stages: [
+              {
+                stage: "awake",
+                duration: 600,
+              },
+              {
+                stage: "light",
+                duration: 1800,
+              },
+              {
+                stage: "deep",
+                duration: 600,
+              },
+              {
+                stage: "rem",
+                duration: 600,
+              },
+            ],
+          },
+        ],
+      });
+    }
+
+    throw new Error(`Unexpected URL: ${url}`);
+  });
+
+  try {
+    const client = new EightSleepClient(
+      loadConfig({
+        EIGHT_SLEEP_ACCESS_TOKEN: "token-123",
+        EIGHT_SLEEP_USER_ID: "user-123",
+      }),
+    );
+
+    const summary = await client.getLatestSleepSummary();
+    assert.deepEqual(summary, {
+      sleepStart: "2026-04-02T02:00:00.000Z",
+      sleepEnd: "2026-04-02T10:00:00.000Z",
+      sleepDuration: 3000,
+      deepPct: 0.2,
+      remPct: 0.2,
+      lightPct: 0.6,
+    });
+  } finally {
+    restoreFetch();
+  }
+});
+
 test("EightSleepClient turns temperature off with the captured temperature write shape", async () => {
   const restoreFetch = installFetchMock(({ url, init }) => {
     if (url === "https://app-api.8slp.net/v1/users/user-123/temperature/pod?ignoreDeviceErrors=false") {

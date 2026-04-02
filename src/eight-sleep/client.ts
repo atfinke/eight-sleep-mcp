@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 
 import type { EightSleepConfig } from "../config.js";
+import { selectLatestSleepInterval, summarizeSleepInterval } from "./sleepSummary.js";
 import {
   AuthTokenResponseSchema,
   AutopilotModeResponseSchema,
@@ -204,6 +205,22 @@ export class EightSleepClient {
       next: nextCursor,
       intervals,
     };
+  }
+
+  async getLatestSleepSummary(input?: {
+    userId?: string | undefined;
+  }) {
+    const response = await this.getSleepIntervals({
+      userId: input?.userId,
+      pages: 1,
+    });
+    const latestInterval = selectLatestSleepInterval(response.intervals);
+
+    if (!latestInterval) {
+      throw new Error("Eight Sleep did not return any sleep intervals for the requested user");
+    }
+
+    return summarizeSleepInterval(latestInterval);
   }
 
   async resumeSmartTemperature(input?: {

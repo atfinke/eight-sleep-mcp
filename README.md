@@ -11,6 +11,8 @@ This project exposes Eight Sleep account, device, temperature, and sleep data th
 Supported capabilities include:
 
 - reading account, device, temperature, recent temperature events, and sleep intervals
+- reading a compact summary of the most recent sleep interval without timeseries payloads
+- fetching compact interval pages with `get_sleep_intervals` `view: "summary"` when full timeseries are not needed
 - resuming smart temperature mode
 - turning temperature control off
 - applying a temporary bedtime temperature change
@@ -28,6 +30,42 @@ Supported capabilities include:
 ## API Coverage
 
 The current implementation uses confirmed requests across `auth-api`, `client-api`, and `app-api`, including authentication, user and device reads, temperature state, temperature events, bedtime schedule updates, pod temperature control, and Autopilot mode changes.
+
+## Sleep Data Guidance
+
+For LLM-facing clients, use the compact sleep tools by default.
+
+Golden paths:
+
+- Use `get_latest_sleep_summary` for the most recent night when you only need compact summary metrics.
+- Use `get_sleep_intervals` with `view: "summary"` when you need multiple recent intervals but do not need `timeseries`, `stages`, or `snoring`.
+
+Example `get_latest_sleep_summary` response:
+
+```json
+{
+  "sleepStart": "2026-04-02T03:38:30.000Z",
+  "sleepEnd": "2026-04-02T15:35:30.000Z",
+  "sleepDuration": 34380,
+  "deepPct": 0.12,
+  "remPct": 0.24,
+  "lightPct": 0.64
+}
+```
+
+Example compact interval call:
+
+```json
+{
+  "tool": "get_sleep_intervals",
+  "arguments": {
+    "pages": 3,
+    "view": "summary"
+  }
+}
+```
+
+`sleepStart` and `sleepEnd` are returned as UTC ISO timestamps. Convert them to the user's local timezone in the caller if you need local bedtime or wake time.
 
 ## Setup
 

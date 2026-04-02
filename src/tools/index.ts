@@ -3,6 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { EightSleepClient } from "../eight-sleep/client.js";
 import { registerGetCurrentUserTool } from "./getCurrentUser.js";
 import { registerGetDeviceTool } from "./getDevice.js";
+import { registerGetLatestSleepSummaryTool } from "./getLatestSleepSummary.js";
 import { registerGetSleepIntervalsTool } from "./getSleepIntervals.js";
 import { registerGetTemperatureEventsTool } from "./getTemperatureEvents.js";
 import { registerGetTemperatureTool } from "./getTemperature.js";
@@ -18,6 +19,7 @@ export function registerTools(server: McpServer, client: EightSleepClient): void
   registerGetDeviceTool(server, client);
   registerGetTemperatureTool(server, client);
   registerGetTemperatureEventsTool(server, client);
+  registerGetLatestSleepSummaryTool(server, client);
   registerGetSleepIntervalsTool(server, client);
   registerResumeSmartTemperatureTool(server, client);
   registerTurnOffTemperatureTool(server, client);

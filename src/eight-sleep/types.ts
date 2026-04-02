@@ -273,44 +273,70 @@ export const TemperatureEventsResponseSchema = z
   .passthrough();
 
 const TimeSeriesPointSchema = z.tuple([IsoDateTimeSchema, z.number()]);
+const SleepStageSchema = z
+  .object({
+    stage: z.string(),
+    duration: z.number(),
+  })
+  .passthrough();
+const SleepStageSummarySchema = z
+  .object({
+    totalDuration: z.number().optional(),
+    sleepDuration: z.number().optional(),
+    outDuration: z.number().optional(),
+    awakeDuration: z.number().optional(),
+    lightDuration: z.number().optional(),
+    deepDuration: z.number().optional(),
+    remDuration: z.number().optional(),
+    awakeBeforeSleepDuration: z.number().optional(),
+    awakeBetweenSleepDuration: z.number().optional(),
+    awakeAfterSleepDuration: z.number().optional(),
+    outBetweenSleepDuration: z.number().optional(),
+    wasoDuration: z.number().optional(),
+    deepPercentOfSleep: z.number().optional(),
+    remPercentOfSleep: z.number().optional(),
+    lightPercentOfSleep: z.number().optional(),
+  })
+  .passthrough();
+export const SleepIntervalSchema = z
+  .object({
+    id: z.string(),
+    deviceTimeAtUpdate: IsoDateTimeSchema.optional(),
+    ts: IsoDateTimeSchema,
+    score: z.number().optional(),
+    duration: z.number().optional(),
+    sleepStart: IsoDateTimeSchema.optional(),
+    sleepEnd: IsoDateTimeSchema.optional(),
+    timezone: z.string().optional(),
+    sleepAlgorithmVersion: z.string().optional(),
+    presenceAlgorithmVersion: z.string().optional(),
+    hrvAlgorithmVersion: z.string().optional(),
+    stageSummary: SleepStageSummarySchema.optional(),
+    stages: z.array(SleepStageSchema).optional(),
+    snoring: z
+      .array(
+        z
+          .object({
+            intensity: z.string(),
+            duration: z.number(),
+          })
+          .passthrough(),
+      )
+      .optional(),
+    timeseries: z.record(z.string(), z.array(TimeSeriesPointSchema)).optional(),
+  })
+  .passthrough();
+
+export const SleepIntervalSummarySchema = SleepIntervalSchema.omit({
+  stages: true,
+  snoring: true,
+  timeseries: true,
+});
 
 export const SleepIntervalsResponseSchema = z
   .object({
     next: z.string().optional(),
-    intervals: z.array(
-      z
-        .object({
-          id: z.string(),
-          deviceTimeAtUpdate: IsoDateTimeSchema.optional(),
-          ts: IsoDateTimeSchema,
-          score: z.number().optional(),
-          sleepAlgorithmVersion: z.string().optional(),
-          presenceAlgorithmVersion: z.string().optional(),
-          hrvAlgorithmVersion: z.string().optional(),
-          stages: z
-            .array(
-              z
-                .object({
-                  stage: z.string(),
-                  duration: z.number(),
-                })
-                .passthrough(),
-            )
-            .optional(),
-          snoring: z
-            .array(
-              z
-                .object({
-                  intensity: z.string(),
-                  duration: z.number(),
-                })
-                .passthrough(),
-            )
-            .optional(),
-          timeseries: z.record(z.string(), z.array(TimeSeriesPointSchema)).optional(),
-        })
-        .passthrough(),
-    ),
+    intervals: z.array(SleepIntervalSchema),
   })
   .passthrough();
 
@@ -353,6 +379,15 @@ export const SleepIntervalsToolResultSchema = z
   })
   .passthrough();
 
+export const LatestSleepSummarySchema = z.object({
+  sleepStart: IsoDateTimeSchema,
+  sleepEnd: IsoDateTimeSchema,
+  sleepDuration: z.number().nonnegative(),
+  deepPct: z.number().min(0).max(1),
+  remPct: z.number().min(0).max(1),
+  lightPct: z.number().min(0).max(1),
+});
+
 export const PermanentBedtimeToolResultSchema = z
   .object({
     userId: z.string().min(1),
@@ -370,3 +405,6 @@ export type TemperatureOverview = z.infer<typeof TemperatureOverviewSchema>;
 export type TemperatureEventsResponse = z.infer<typeof TemperatureEventsResponseSchema>;
 export type SleepIntervalsResponse = z.infer<typeof SleepIntervalsResponseSchema>;
 export type AutopilotModeResponse = z.infer<typeof AutopilotModeResponseSchema>;
+export type SleepInterval = z.infer<typeof SleepIntervalSchema>;
+export type SleepIntervalSummary = z.infer<typeof SleepIntervalSummarySchema>;
+export type LatestSleepSummary = z.infer<typeof LatestSleepSummarySchema>;

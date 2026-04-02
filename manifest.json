@@ -43,8 +43,12 @@
       "description": "Return recent temperature-related events."
     },
     {
+      "name": "get_latest_sleep_summary",
+      "description": "Return compact summary metrics for the most recent sleep interval."
+    },
+    {
       "name": "get_sleep_intervals",
-      "description": "Return historical sleep intervals."
+      "description": "Return historical sleep intervals, with an optional compact summary view."
     },
     {
       "name": "resume_smart_temperature",
