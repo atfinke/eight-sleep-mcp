@@ -11,7 +11,7 @@ export function registerResumeSmartTemperatureTool(
   client: EightSleepClient,
 ): void {
   server.registerTool(
-    "resume_smart_temperature",
+    "eight_sleep_resume_smart_temperature",
     {
       title: "Resume Smart Temperature",
       description:

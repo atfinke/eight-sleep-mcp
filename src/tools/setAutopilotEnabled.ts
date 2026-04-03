@@ -8,7 +8,7 @@ import { textResponse } from "./response.js";
 
 export function registerSetAutopilotEnabledTool(server: McpServer, client: EightSleepClient): void {
   server.registerTool(
-    "set_autopilot_enabled",
+    "eight_sleep_set_autopilot_enabled",
     {
       title: "Set Autopilot Enabled",
       description: "Toggles the captured level-suggestions-mode autopilot flag.",

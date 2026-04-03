@@ -11,7 +11,7 @@ export function registerUpdateSmartTemperatureLevelsTool(
   client: EightSleepClient,
 ): void {
   server.registerTool(
-    "update_smart_temperature_levels",
+    "eight_sleep_update_smart_temperature_levels",
     {
       title: "Update Smart Temperature Levels",
       description:

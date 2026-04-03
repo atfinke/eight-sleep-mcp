@@ -11,7 +11,7 @@ export function registerTurnOffTemperatureTool(
   client: EightSleepClient,
 ): void {
   server.registerTool(
-    "turn_off_temperature",
+    "eight_sleep_turn_off_temperature",
     {
       title: "Turn Off Temperature",
       description:

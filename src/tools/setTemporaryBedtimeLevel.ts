@@ -11,7 +11,7 @@ export function registerSetTemporaryBedtimeLevelTool(
   client: EightSleepClient,
 ): void {
   server.registerTool(
-    "set_temporary_bedtime_level",
+    "eight_sleep_set_temporary_bedtime_level",
     {
       title: "Set Temporary Bedtime Level",
       description:

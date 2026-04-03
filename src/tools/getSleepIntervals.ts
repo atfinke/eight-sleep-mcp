@@ -9,7 +9,7 @@ import { textResponse } from "./response.js";
 
 export function registerGetSleepIntervalsTool(server: McpServer, client: EightSleepClient): void {
   server.registerTool(
-    "get_sleep_intervals",
+    "eight_sleep_get_sleep_intervals",
     {
       title: "Get Sleep Intervals",
       description:

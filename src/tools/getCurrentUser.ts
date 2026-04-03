@@ -7,7 +7,7 @@ import { textResponse } from "./response.js";
 
 export function registerGetCurrentUserTool(server: McpServer, client: EightSleepClient): void {
   server.registerTool(
-    "get_current_user",
+    "eight_sleep_get_current_user",
     {
       title: "Get Current User",
       description: "Returns the authenticated Eight Sleep user profile and resolved user identifier.",

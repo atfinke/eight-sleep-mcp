@@ -8,7 +8,7 @@ import { textResponse } from "./response.js";
 
 export function registerGetTemperatureTool(server: McpServer, client: EightSleepClient): void {
   server.registerTool(
-    "get_temperature",
+    "eight_sleep_get_temperature",
     {
       title: "Get Temperature",
       description:

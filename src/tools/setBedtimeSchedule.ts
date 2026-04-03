@@ -11,7 +11,7 @@ export function registerSetBedtimeScheduleTool(
   client: EightSleepClient,
 ): void {
   server.registerTool(
-    "set_bedtime_schedule",
+    "eight_sleep_set_bedtime_schedule",
     {
       title: "Set Bedtime Schedule",
       description:

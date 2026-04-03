@@ -11,7 +11,7 @@ export function registerGetLatestSleepSummaryTool(
   client: EightSleepClient,
 ): void {
   server.registerTool(
-    "get_latest_sleep_summary",
+    "eight_sleep_get_latest_sleep_summary",
     {
       title: "Get Latest Sleep Summary",
       description:

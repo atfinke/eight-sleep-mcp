@@ -8,7 +8,7 @@ import { textResponse } from "./response.js";
 
 export function registerGetDeviceTool(server: McpServer, client: EightSleepClient): void {
   server.registerTool(
-    "get_device",
+    "eight_sleep_get_device",
     {
       title: "Get Device",
       description:

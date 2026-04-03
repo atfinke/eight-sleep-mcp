@@ -8,7 +8,7 @@ import { textResponse } from "./response.js";
 
 export function registerGetTemperatureEventsTool(server: McpServer, client: EightSleepClient): void {
   server.registerTool(
-    "get_temperature_events",
+    "eight_sleep_get_temperature_events",
     {
       title: "Get Temperature Events",
       description: "Returns recent temperature events. If from is omitted, the server uses the past hour.",
