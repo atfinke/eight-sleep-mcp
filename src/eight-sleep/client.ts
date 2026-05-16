@@ -11,10 +11,11 @@ import {
   CurrentUserResponseSchema,
   DeviceResponseSchema,
   SleepIntervalsResponseSchema,
+  SleepTrendsResponseSchema,
   TemperatureEventsResponseSchema,
   TemperatureOverviewSchema,
 } from "./types.js";
-import type { SleepIntervalsResponse } from "./types.js";
+import type { SleepIntervalsResponse, SleepTrendsResponse } from "./types.js";
 
 type ApiBase = "auth" | "client" | "app";
 
@@ -221,6 +222,43 @@ export class EightSleepClient {
     }
 
     return summarizeSleepInterval(latestInterval);
+  }
+
+  async getSleepTrends(input: {
+    from: string;
+    to: string;
+    timezone: string;
+    userId?: string | undefined;
+  }): Promise<{
+    userId: string;
+    from: string;
+    to: string;
+    timezone: string;
+    avgScore?: number | undefined;
+    days: SleepTrendsResponse["days"];
+  }> {
+    const resolvedUserId = await this.getResolvedUserId(input.userId);
+    const params = new URLSearchParams({
+      tz: input.timezone,
+      from: input.from,
+      to: input.to,
+      "include-main": "false",
+      "include-all-sessions": "true",
+      "model-version": "v2",
+    });
+    const response = await this.requestJson({
+      base: "client",
+      path: `/users/${encodeURIComponent(resolvedUserId)}/trends?${params.toString()}`,
+      schema: SleepTrendsResponseSchema,
+    });
+    return {
+      userId: resolvedUserId,
+      from: input.from,
+      to: input.to,
+      timezone: input.timezone,
+      avgScore: response.avgScore,
+      days: response.days,
+    };
   }
 
   async resumeSmartTemperature(input?: {
