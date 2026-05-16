@@ -388,6 +388,105 @@ export const LatestSleepSummarySchema = z.object({
   lightPct: z.number().min(0).max(1),
 });
 
+// /trends API gotcha: include-main=false + include-all-sessions=true.
+// Passing include-main=true alongside include-all-sessions=true returns
+// HTTP 400 "Should only request one of include-main or include-all-sessions".
+// Score lives ONLY here; /intervals.score returns 0.
+const SleepQualityScoreComponentSchema = z
+  .object({
+    current: z.union([z.number(), z.string()]).optional(),
+    average: z.union([z.number(), z.string()]).optional(),
+    score: z.number().optional(),
+    weight: z.number().optional(),
+    weighted: z.number().optional(),
+    available: z.boolean().optional(),
+    inclusive7DayAverage: z.union([z.number(), z.string()]).optional(),
+    lowerRange: z.union([z.number(), z.string()]).optional(),
+    upperRange: z.union([z.number(), z.string()]).optional(),
+    lowerBound: z.union([z.number(), z.string()]).optional(),
+    upperBound: z.union([z.number(), z.string()]).optional(),
+    stdDev: z.number().optional(),
+  })
+  .passthrough();
+
+const SleepQualityScoreSchema = z
+  .object({
+    total: z.number().optional(),
+    weight: z.number().optional(),
+    weighted: z.number().optional(),
+    sleepDurationSeconds: SleepQualityScoreComponentSchema.optional(),
+    hrv: SleepQualityScoreComponentSchema.optional(),
+    respiratoryRate: SleepQualityScoreComponentSchema.optional(),
+    heartRate: SleepQualityScoreComponentSchema.optional(),
+    deep: SleepQualityScoreComponentSchema.optional(),
+    rem: SleepQualityScoreComponentSchema.optional(),
+    waso: SleepQualityScoreComponentSchema.optional(),
+  })
+  .passthrough();
+
+const SleepRoutineScoreSchema = z
+  .object({
+    total: z.number().optional(),
+    weight: z.number().optional(),
+    weighted: z.number().optional(),
+    wakeupConsistency: SleepQualityScoreComponentSchema.optional(),
+    sleepStartConsistency: SleepQualityScoreComponentSchema.optional(),
+    bedtimeConsistency: SleepQualityScoreComponentSchema.optional(),
+    latencyAsleepSeconds: SleepQualityScoreComponentSchema.optional(),
+    latencyOutSeconds: SleepQualityScoreComponentSchema.optional(),
+  })
+  .passthrough();
+
+export const SleepTrendDaySchema = z
+  .object({
+    day: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    score: z.number().optional(),
+    presenceDuration: z.number().optional(),
+    sleepDuration: z.number().optional(),
+    remDuration: z.number().optional(),
+    remPercent: z.number().optional(),
+    lightDuration: z.number().optional(),
+    deepDuration: z.number().optional(),
+    deepPercent: z.number().optional(),
+    snoreDuration: z.number().optional(),
+    heavySnoreDuration: z.number().optional(),
+    snorePercent: z.number().optional(),
+    heavySnorePercent: z.number().optional(),
+    mitigationEvents: z.number().optional(),
+    presenceStart: z.string().optional(),
+    presenceEnd: z.string().optional(),
+    sleepStart: z.string().optional(),
+    sleepEnd: z.string().optional(),
+    tnt: z.number().optional(),
+    sleepQualityScore: SleepQualityScoreSchema.optional(),
+    sleepRoutineScore: SleepRoutineScoreSchema.optional(),
+  })
+  .passthrough();
+
+export const SleepTrendsResponseSchema = z
+  .object({
+    days: z.array(SleepTrendDaySchema),
+    avgScore: z.number().optional(),
+    avgPresenceDuration: z.number().optional(),
+    avgSleepDuration: z.number().optional(),
+    avgDeepPercent: z.number().optional(),
+    avgTnt: z.number().optional(),
+    modelVersion: z.string().optional(),
+    sfsCalculator: z.string().optional(),
+  })
+  .passthrough();
+
+export const SleepTrendsToolResultSchema = z
+  .object({
+    userId: z.string().min(1),
+    from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    timezone: z.string().min(1),
+    avgScore: z.number().optional(),
+    days: z.array(SleepTrendDaySchema),
+  })
+  .passthrough();
+
 export const PermanentBedtimeToolResultSchema = z
   .object({
     userId: z.string().min(1),
@@ -408,3 +507,6 @@ export type AutopilotModeResponse = z.infer<typeof AutopilotModeResponseSchema>;
 export type SleepInterval = z.infer<typeof SleepIntervalSchema>;
 export type SleepIntervalSummary = z.infer<typeof SleepIntervalSummarySchema>;
 export type LatestSleepSummary = z.infer<typeof LatestSleepSummarySchema>;
+export type SleepTrendDay = z.infer<typeof SleepTrendDaySchema>;
+export type SleepTrendsResponse = z.infer<typeof SleepTrendsResponseSchema>;
+export type SleepTrendsToolResult = z.infer<typeof SleepTrendsToolResultSchema>;

@@ -615,3 +615,64 @@ test("EightSleepClient wraps fetch rejections as network errors", async () => {
     restoreFetch();
   }
 });
+
+test("EightSleepClient.getSleepTrends sends include-main=false alongside include-all-sessions=true", async () => {
+  let capturedUrl: string | null = null;
+  const restoreFetch = installFetchMock(({ url, init }) => {
+    capturedUrl = url;
+    assert.equal(init?.method, "GET");
+    if (url.startsWith("https://client-api.8slp.net/v1/users/user-123/trends?")) {
+      return jsonResponse({
+        days: [
+          {
+            day: "2026-05-15",
+            score: 83,
+            sleepDuration: 25080,
+            sleepQualityScore: { total: 79 },
+            sleepRoutineScore: { total: 88 },
+          },
+          {
+            day: "2026-05-14",
+            score: 80,
+            sleepDuration: 24600,
+          },
+        ],
+        avgScore: 82,
+      });
+    }
+    throw new Error(`Unexpected URL: ${url}`);
+  });
+
+  try {
+    const client = new EightSleepClient(
+      loadConfig({
+        EIGHT_SLEEP_ACCESS_TOKEN: "token-123",
+        EIGHT_SLEEP_USER_ID: "user-123",
+      }),
+    );
+
+    const trends = await client.getSleepTrends({
+      from: "2026-05-14",
+      to: "2026-05-15",
+      timezone: "America/Los_Angeles",
+    });
+
+    const url = capturedUrl ?? "";
+    assert.match(url, /include-main=false/);
+    assert.match(url, /include-all-sessions=true/);
+    assert.match(url, /model-version=v2/);
+    assert.match(url, /tz=America%2FLos_Angeles/);
+    assert.equal(trends.userId, "user-123");
+    assert.equal(trends.from, "2026-05-14");
+    assert.equal(trends.to, "2026-05-15");
+    assert.equal(trends.avgScore, 82);
+    assert.equal(trends.days.length, 2);
+    const firstDay = trends.days[0];
+    assert.ok(firstDay, "expected first day in trends response");
+    assert.equal(firstDay.score, 83);
+    assert.equal(firstDay.sleepQualityScore?.total, 79);
+    assert.equal(firstDay.sleepRoutineScore?.total, 88);
+  } finally {
+    restoreFetch();
+  }
+});
