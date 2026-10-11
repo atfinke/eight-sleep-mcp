@@ -244,7 +244,8 @@ export class EightSleepClient {
       to: input.to,
       "include-main": "false",
       "include-all-sessions": "true",
-      "model-version": "v2",
+      "model-version": "v3",
+      "consistent-read": "false",
     });
     const response = await this.requestJson({
       base: "client",
@@ -259,6 +260,25 @@ export class EightSleepClient {
       avgScore: response.avgScore,
       days: response.days,
     };
+  }
+
+  async setCurrentLevel(input: {
+    level: number;
+    userId?: string | undefined;
+    ignoreDeviceErrors?: boolean | undefined;
+  }) {
+    const resolvedUserId = await this.getResolvedUserId(input.userId);
+    return this.requestJson({
+      base: "app",
+      path: `/users/${encodeURIComponent(resolvedUserId)}/temperature/pod?ignoreDeviceErrors=${String(
+        input.ignoreDeviceErrors ?? this.config.defaults.ignoreDeviceErrors,
+      )}`,
+      method: "PUT",
+      body: {
+        currentLevel: input.level,
+      },
+      schema: TemperatureOverviewSchema,
+    });
   }
 
   async resumeSmartTemperature(input?: {

@@ -9,6 +9,7 @@ import { registerGetSleepTrendsTool } from "./getSleepTrends.js";
 import { registerGetTemperatureEventsTool } from "./getTemperatureEvents.js";
 import { registerGetTemperatureTool } from "./getTemperature.js";
 import { registerResumeSmartTemperatureTool } from "./resumeSmartTemperature.js";
+import { registerSetCurrentLevelTool } from "./setCurrentLevel.js";
 import { registerSetAutopilotEnabledTool } from "./setAutopilotEnabled.js";
 import { registerSetBedtimeScheduleTool } from "./setBedtimeSchedule.js";
 import { registerSetTemporaryBedtimeLevelTool } from "./setTemporaryBedtimeLevel.js";
@@ -24,6 +25,7 @@ export function registerTools(server: McpServer, client: EightSleepClient): void
   registerGetSleepIntervalsTool(server, client);
   registerGetSleepTrendsTool(server, client);
   registerResumeSmartTemperatureTool(server, client);
+  registerSetCurrentLevelTool(server, client);
   registerTurnOffTemperatureTool(server, client);
   registerSetTemporaryBedtimeLevelTool(server, client);
   registerSetBedtimeScheduleTool(server, client);

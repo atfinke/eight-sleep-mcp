@@ -51,12 +51,20 @@
       "description": "Return historical sleep intervals, with an optional compact summary view."
     },
     {
+      "name": "get_sleep_trends",
+      "description": "Return daily sleep trends and scores."
+    },
+    {
       "name": "resume_smart_temperature",
       "description": "Resume smart temperature mode."
     },
     {
       "name": "turn_off_temperature",
       "description": "Turn off active heating and cooling."
+    },
+    {
+      "name": "set_current_level",
+      "description": "Immediately change the active heating or cooling level without editing schedules."
     },
     {
       "name": "set_temporary_bedtime_level",

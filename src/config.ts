@@ -10,12 +10,12 @@ const envSchema = z.object({
   EIGHT_SLEEP_CLIENT_SECRET: z.string().trim().min(1).optional(),
   EIGHT_SLEEP_USER_ID: z.string().trim().min(1).optional(),
   EIGHT_SLEEP_CLIENT_DEVICE_ID: z.string().trim().min(1).optional(),
-  EIGHT_SLEEP_CLIENT_APP_VERSION: z.string().trim().min(1).default("7.46.0"),
+  EIGHT_SLEEP_CLIENT_APP_VERSION: z.string().trim().min(1).default("7.60.1"),
   EIGHT_SLEEP_USER_AGENT: z
     .string()
     .trim()
     .min(1)
-    .default("iOS App - 7.46.0/58 - iPhone18,1 - iOS 26.4"),
+    .default("iOS App - 7.60.1/2 - iPhone 17 Pro - iOS 27.0.1"),
   EIGHT_SLEEP_ACCEPT_LANGUAGE: z.string().trim().min(1).default("en-US;q=1.0"),
   EIGHT_SLEEP_IGNORE_DEVICE_ERRORS_DEFAULT: z.enum(["true", "false"]).default("false"),
   EIGHT_SLEEP_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().max(120_000).default(15_000),
