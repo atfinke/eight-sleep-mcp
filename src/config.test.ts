@@ -12,6 +12,8 @@ test("loadConfig accepts access-token-only configuration", () => {
   assert.equal(config.auth, null);
   assert.equal(config.userId, null);
   assert.equal(config.defaults.ignoreDeviceErrors, false);
+  assert.equal(config.headers.appVersion, "7.60.1");
+  assert.equal(config.headers.userAgent, "iOS App - 7.60.1/2 - iPhone 17 Pro - iOS 27.0.1");
   assert.equal(config.request.timeoutMs, 15_000);
   assert.match(config.headers.clientDeviceId, /^[0-9a-f-]{36}$/u);
   assert.match(config.headers.clientSessionId, /^[0-9a-f-]{36}$/u);

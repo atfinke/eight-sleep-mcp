@@ -13,6 +13,7 @@ Supported capabilities include:
 - reading account, device, temperature, recent temperature events, and sleep intervals
 - reading a compact summary of the most recent sleep interval without timeseries payloads
 - fetching compact interval pages with `get_sleep_intervals` `view: "summary"` when full timeseries are not needed
+- setting the current active temperature level (-100 to 100)
 - resuming smart temperature mode
 - turning temperature control off
 - applying a temporary bedtime temperature change
@@ -22,6 +23,7 @@ Supported capabilities include:
 
 ## Behavior Model
 
+- Immediate temperature changes use `currentLevel` on the pod temperature endpoint, without editing bedtime schedules or saved smart levels.
 - Temporary bedtime changes are sent as override values to the pod temperature endpoint.
 - Permanent bedtime changes update the bedtime schedule, then clear the temporary override.
 - Smart temperature profile editing is separate from bedtime schedule editing.
@@ -30,6 +32,8 @@ Supported capabilities include:
 ## API Coverage
 
 The current implementation uses confirmed requests across `auth-api`, `client-api`, and `app-api`, including authentication, user and device reads, temperature state, temperature events, bedtime schedule updates, pod temperature control, and Autopilot mode changes.
+
+The sleep-trends request uses `model-version=v3` and `consistent-read=false` as observed in October 2026 traffic. The capture contained no nonempty trends days, so richer v3 trend payloads have not been live-validated. Version and user-agent headers are configurable via `EIGHT_SLEEP_CLIENT_APP_VERSION` and `EIGHT_SLEEP_USER_AGENT`.
 
 ## Sleep Data Guidance
 

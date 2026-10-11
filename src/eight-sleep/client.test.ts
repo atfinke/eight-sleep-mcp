@@ -39,7 +39,8 @@ test("EightSleepClient attaches headers to authenticated requests", async () => 
     const headers = init?.headers as Record<string, string>;
     assert.equal(headers.Authorization, "Bearer token-123");
     assert.equal(headers["X-Client-Device-Id"], "device-123");
-    assert.equal(headers["X-Client-App-Version"], "7.46.0");
+    assert.equal(headers["X-Client-App-Version"], "7.60.1");
+    assert.equal(headers["User-Agent"], "iOS App - 7.60.1/2 - iPhone 17 Pro - iOS 27.0.1");
     assert.equal(headers.Accept, "application/json");
     assert.equal(headers["Content-Type"], undefined);
     assert.match(headers["X-Client-Request-Id"] ?? "", /^[0-9a-f-]{36}$/u);
@@ -329,6 +330,44 @@ test("EightSleepClient derives the latest sleep summary from stages when stageSu
       remPct: 0.2,
       lightPct: 0.6,
     });
+  } finally {
+    restoreFetch();
+  }
+});
+
+test("EightSleepClient sets the current level without changing saved schedules", async () => {
+  const restoreFetch = installFetchMock(({ url, init }) => {
+    assert.equal(
+      url,
+      "https://app-api.8slp.net/v1/users/user-123/temperature/pod?ignoreDeviceErrors=true",
+    );
+    assert.equal(init?.method, "PUT");
+    assert.deepEqual(JSON.parse(String(init?.body)), { currentLevel: -40 });
+
+    return jsonResponse({
+      devices: [
+        {
+          device: { deviceId: "device-abc" },
+          currentLevel: -40,
+          currentState: { type: "smart" },
+        },
+      ],
+    });
+  });
+
+  try {
+    const client = new EightSleepClient(
+      loadConfig({
+        EIGHT_SLEEP_ACCESS_TOKEN: "token-123",
+        EIGHT_SLEEP_USER_ID: "user-123",
+      }),
+    );
+
+    const response = await client.setCurrentLevel({
+      level: -40,
+      ignoreDeviceErrors: true,
+    });
+    assert.equal(response.devices[0]?.currentLevel, -40);
   } finally {
     restoreFetch();
   }
@@ -660,7 +699,8 @@ test("EightSleepClient.getSleepTrends sends include-main=false alongside include
     const url = capturedUrl ?? "";
     assert.match(url, /include-main=false/);
     assert.match(url, /include-all-sessions=true/);
-    assert.match(url, /model-version=v2/);
+    assert.match(url, /model-version=v3/);
+    assert.match(url, /consistent-read=false/);
     assert.match(url, /tz=America%2FLos_Angeles/);
     assert.equal(trends.userId, "user-123");
     assert.equal(trends.from, "2026-05-14");
